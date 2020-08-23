@@ -3,7 +3,14 @@ import random
 import copy
 from scipy import stats
 
-# models toxin/antitoxin system at molecular level
+#-------------Models toxin/antitoxin system at molecular level---------------------------#
+
+# Returns: times  --  timing of each event
+#		   As     --  Number of antitoxin proteins at each time
+#          Ts     --  Number of toxin proteins at each time
+#          ATs    --  Number of toxin/antitoxin protein complexes at each time
+#          ms     --  Number of mRNA at each time		   
+#          Ps     --  Promoter state at each time
 def gillespie(params, num_iters):
     A0 = params['A0']  # initial antitoxin protein conc
     T0 = params['T0']  # initial toxin protein conc
@@ -26,6 +33,7 @@ def gillespie(params, num_iters):
 
     promoter_states = [km, kmA, kmAT]
 
+    # arrays of molecular contents of simulation after every change
     As = [A0]
     Ts = [T0]
     ATs = [AT0]
@@ -58,6 +66,8 @@ def gillespie(params, num_iters):
             P = 2
         Ps.append(P)
 
+        # relative probability of each change occurring
+        # (exponential)
         lambdas = []
         lambdas.append(kA * ms[i])
         lambdas.append(kT * ms[i])
