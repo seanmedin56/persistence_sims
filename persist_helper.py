@@ -1,15 +1,15 @@
 import numpy as np
 import random
 import copy
-from scipy import stats
+import sys
 
 #-------------Models toxin/antitoxin system at molecular level---------------------------#
 
 # Returns: times  --  timing of each event
-#		   As     --  Number of antitoxin proteins at each time
+#          As     --  Number of antitoxin proteins at each time
 #          Ts     --  Number of toxin proteins at each time
 #          ATs    --  Number of toxin/antitoxin protein complexes at each time
-#          ms     --  Number of mRNA at each time		   
+#          ms     --  Number of mRNA at each time          
 #          Ps     --  Promoter state at each time
 def gillespie(params, num_iters):
     A0 = params['A0']  # initial antitoxin protein conc
@@ -339,9 +339,19 @@ class bac2:
         flip_times = np.zeros(len(self.persist))
         for i in range(len(self.persist)):
             if self.persist[i] == 0:
-                flip_times[i] = 1 / stats.powerlaw.rvs(self.m[i][0] + 1)
+                samp = sys.float_info.max
+                try:
+                    samp = (1 / (1 - random.random()))**(1/(self.m[i][0] - 1))
+                except:
+                    samp = sys.float_info.max
+                flip_times[i] = samp
             else:
-                flip_times[i] = 1 / stats.powerlaw.rvs(self.m[i][1] + 1)
+                samp = sys.float_info.max
+                try:
+                    samp = (1 / (1 - random.random()))**(1/(self.m[i][1] - 1))
+                except:
+                    samp = sys.float_info.max
+                flip_times[i] = samp
         return flip_times
 
 
@@ -357,9 +367,19 @@ class bac2:
                 self.persist[i] = 1 - self.persist[i]
                 check_birth = False
                 if self.persist[i] == 0:
-                    self.flip_times[i] += 1 / stats.powerlaw.rvs(self.m[i][0] + 1)
+                    samp = sys.float_info.max
+                    try:
+                        samp = (1 / (1 - random.random()))**(1/(self.m[i][0] - 1))
+                    except:
+                        samp = sys.float_info.max
+                    self.flip_times[i] += samp
                 else:
-                    self.flip_times[i] += 1 / stats.powerlaw.rvs(self.m[i][1] + 1)
+                    samp = sys.float_info.max
+                    try:
+                        samp = (1 / (1 - random.random()))**(1/(self.m[i][1] - 1))
+                    except:
+                        samp = sys.float_info.max
+                    self.flip_times[i] += samp
 
         # updates death
         if env == 0 or sum(self.persist) > 0:
